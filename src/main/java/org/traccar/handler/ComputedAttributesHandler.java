@@ -58,7 +58,15 @@ public class ComputedAttributesHandler extends BaseDataHandler {
         this.attributesManager = attributesManager;
         engine = new JexlEngine();
         engine.setStrict(true);
-        engine.setFunctions(Collections.singletonMap("math", Math.class));
+
+        HashMap<String, Object> funcs = new HashMap();
+        funcs.put("math", Math.class);
+        funcs.put("long", Long.class);
+        funcs.put("string", String.class);
+        funcs.put("adflot", AdflotUtil.class);
+
+        engine.setFunctions(funcs);
+        
         includeDeviceAttributes = config.getBoolean(Keys.PROCESSING_COMPUTED_ATTRIBUTES_DEVICE_ATTRIBUTES);
     }
 
