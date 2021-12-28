@@ -28,19 +28,6 @@ public class AdflotUtil {
         return sb.toString();
     }
 
-    private static String hexToAscii(String hexStr) {
-        StringBuilder output = new StringBuilder("");
-
-        for (int i = 0; i < hexStr.length(); i += 2) {
-            String str = hexStr.substring(i, i + 2);
-            output.append((char) Integer.parseInt(str, 16));
-        }
-
-        output.reverse();
-
-        return output.toString();
-    }
-
     public static double getKphDesdeNudos(double nudos) {
         return UnitsConverter.kphFromKnots(nudos);
     }
@@ -69,4 +56,104 @@ public class AdflotUtil {
         return litrosCalculados;
     }
 
+
+    public static double getAceleracionLineal(String protocolo, Long aceleraciones) {
+        double aceleracion = 0;
+
+        switch (protocolo) {
+            case GALILEO_PROTOCOL:
+                aceleracion = getAceleracion(aceleraciones, 7).doubleValue() / 100d;
+                break;
+        }
+        return aceleracion;
+    }
+
+    public static double getAceleracionCentripeta(String protocolo, Long aceleraciones) {
+        double aceleracion = 0;
+
+        switch (protocolo) {
+            case GALILEO_PROTOCOL:
+                aceleracion = getAceleracion(aceleraciones, 3).doubleValue() / 100d;
+                break;
+        }
+        return aceleracion;
+    }
+
+
+    public static double getAceleracionFrenado(String protocolo, Long aceleraciones) {
+        double aceleracion = 0;
+
+        switch (protocolo) {
+            case GALILEO_PROTOCOL:
+                aceleracion = getAceleracion(aceleraciones, 5).doubleValue() / 100d;
+                break;
+        }
+        return aceleracion;
+    }
+
+    public static double getAceleracionHorizontal(String protocolo, Long aceleraciones) {
+        double aceleracion = 0;
+
+        switch (protocolo) {
+            case GALILEO_PROTOCOL:
+                aceleracion = getAceleracion(aceleraciones, 1).doubleValue() / 100d;
+                break;
+        }
+        return aceleracion;
+
+    }
+
+    public static double getAceleracionLineal(String protocolo, Integer aceleraciones) {
+        return getAceleracionLineal(protocolo, aceleraciones.longValue());
+    }
+
+    public static double getAceleracionCentripeta(String protocolo, Integer aceleraciones) {
+        return getAceleracionCentripeta(protocolo, aceleraciones.longValue());
+    }
+
+    public static double getAceleracionFrenado(String protocolo, Integer aceleraciones) {
+        return getAceleracionFrenado(protocolo, aceleraciones.longValue());
+    }
+
+    public static double getAceleracionHorizontal(String protocolo, Integer aceleraciones) {
+        return getAceleracionHorizontal(protocolo, aceleraciones.longValue());
+    }
+
+    private static String hexToAscii(String hexStr) {
+        StringBuilder output = new StringBuilder("");
+
+        for (int i = 0; i < hexStr.length(); i += 2) {
+            String str = hexStr.substring(i, i + 2);
+            output.append((char) Integer.parseInt(str, 16));
+        }
+
+        output.reverse();
+
+        return output.toString();
+    }
+
+    private static Integer getAceleracion(Long aceleraciones, Integer inicio) {
+        return hexToInteger(padIzquierdaCeros(longToHex(aceleraciones), 8), inicio);
+    }
+
+    private static String longToHex(Long valor) {
+        return Long.toHexString(valor);
+    }
+
+    private static Integer hexToInteger(String hex, Integer posicion) {
+        return Integer.parseInt(hex.substring(posicion - 1, posicion + 1), 16);
+    }
+
+    private static String padIzquierdaCeros(String inputString, int length) {
+        if (inputString.length() >= length) {
+            return inputString;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() < length - inputString.length()) {
+            sb.append('0');
+        }
+        sb.append(inputString);
+
+        return sb.toString();
+    }
 }
