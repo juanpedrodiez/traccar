@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 - 2021 Anton Tananaev (anton@traccar.org)
+ * Copyright 2022 Anton Tananaev (anton@traccar.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,16 @@ import org.traccar.CharacterDelimiterFrameDecoder;
 import org.traccar.PipelineBuilder;
 import org.traccar.TrackerServer;
 
-public class MobilogixProtocol extends BaseProtocol {
+public class JidoProtocol extends BaseProtocol {
 
-    public MobilogixProtocol() {
+    public JidoProtocol() {
         addServer(new TrackerServer(false, getName()) {
             @Override
             protected void addProtocolHandlers(PipelineBuilder pipeline) {
-                pipeline.addLast(new CharacterDelimiterFrameDecoder(1024, ']'));
+                pipeline.addLast(new CharacterDelimiterFrameDecoder(1024, '#'));
                 pipeline.addLast(new StringEncoder());
                 pipeline.addLast(new StringDecoder());
-                pipeline.addLast(new MobilogixProtocolDecoder(MobilogixProtocol.this));
+                pipeline.addLast(new JidoProtocolDecoder(JidoProtocol.this));
             }
         });
     }

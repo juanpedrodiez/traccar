@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Anton Tananaev (anton@traccar.org)
+ * Copyright 2020 - 2021 Anton Tananaev (anton@traccar.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,9 @@ public class MobilogixProtocolDecoder extends BaseProtocolDecoder {
             .number("(d+.d+)")                   // battery
             .groupBegin()
             .text(",")
-            .number("(d)")                       // valid
+            .number("(d)")                       // satellites
             .number("(d)")                       // rssi
-            .number("(d),")                      // satellites
+            .number("(d),")                      // valid
             .number("(-?d+.d+),")                // latitude
             .number("(-?d+.d+),")                // longitude
             .number("(d+.?d*),")                 // speed
@@ -83,7 +83,7 @@ public class MobilogixProtocolDecoder extends BaseProtocolDecoder {
     protected Object decode(
             Channel channel, SocketAddress remoteAddress, Object msg) throws Exception {
 
-        String sentence = (String) msg;
+        String sentence = ((String) msg).trim();
         String type = sentence.substring(21, sentence.indexOf(',', 21));
 
         if (channel != null) {
@@ -127,11 +127,11 @@ public class MobilogixProtocolDecoder extends BaseProtocolDecoder {
 
         if (parser.hasNext(7)) {
 
+            position.set(Position.KEY_SATELLITES, parser.nextInt());
+            position.set(Position.KEY_RSSI, 6 * parser.nextInt() - 111);
+
             position.setValid(parser.nextInt() > 0);
             position.setFixTime(position.getDeviceTime());
-
-            position.set(Position.KEY_RSSI, parser.nextInt());
-            position.set(Position.KEY_SATELLITES, parser.nextInt());
 
             position.setLatitude(parser.nextDouble());
             position.setLongitude(parser.nextDouble());
