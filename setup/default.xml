@@ -18,6 +18,8 @@
     <entry key='geocoder.type'>nominatim</entry>
     <entry key='geocoder.url'>https://us1.locationiq.com/v1/reverse.php</entry>
     <entry key='geocoder.key'>pk.689d849289c8c63708068b2ff1f63b2d</entry>
+    <entry key='geocoder.onRequest'>true</entry>
+    <entry key='geocoder.ignorePositions'>true</entry>
 
     <entry key='logger.level'>info</entry>
     <entry key='logger.file'>./logs/tracker-server.log</entry>
@@ -309,5 +311,6 @@
     <entry key='flexapi.port'>5235</entry>
     <entry key='dsf22.port'>5236</entry>
     <entry key='jido.port'>5237</entry>
+    <entry key='armoli.port'>5238</entry>
 
 </properties>

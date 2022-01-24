@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 - 2021 Anton Tananaev (anton@traccar.org)
+ * Copyright 2022 Anton Tananaev (anton@traccar.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.traccar.handler;
+package org.traccar;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import org.traccar.TrackerConnector;
+import io.netty.util.concurrent.Future;
 
-public class OpenChannelHandler extends ChannelDuplexHandler {
+import java.net.SocketAddress;
+import java.util.concurrent.TimeUnit;
 
-    private final TrackerConnector connector;
+public abstract class BaseProtocolPoller extends ChannelDuplexHandler {
 
-    public OpenChannelHandler(TrackerConnector connector) {
-        this.connector = connector;
+    private final long interval;
+    private Future<?> timeout;
+
+    public BaseProtocolPoller(long interval) {
+        this.interval = interval;
     }
+
+    protected abstract void sendRequest(Channel channel, SocketAddress remoteAddress);
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        connector.getChannelGroup().add(ctx.channel());
+        if (interval > 0) {
+            timeout = ctx.executor().scheduleAtFixedRate(
+                    () -> sendRequest(ctx.channel(), ctx.channel().remoteAddress()), 0, interval, TimeUnit.SECONDS);
+        }
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        connector.getChannelGroup().remove(ctx.channel());
+        if (timeout != null) {
+            timeout.cancel(false);
+            timeout = null;
+        }
     }
 
 }

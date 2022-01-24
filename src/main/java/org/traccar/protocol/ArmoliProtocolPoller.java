@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 - 2020 Anton Tananaev (anton@traccar.org)
+ * Copyright 2022 Anton Tananaev (anton@traccar.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.traccar;
+package org.traccar.protocol;
 
 import io.netty.channel.Channel;
-import org.traccar.model.Command;
+import org.traccar.BaseProtocolPoller;
+import org.traccar.Protocol;
 
 import java.net.SocketAddress;
-import java.util.Collection;
 
-public interface Protocol {
+public class ArmoliProtocolPoller extends BaseProtocolPoller {
 
-    String getName();
+    public ArmoliProtocolPoller(Protocol protocol) {
+        super(180000);
+    }
 
-    Collection<TrackerConnector> getConnectorList();
-
-    Collection<String> getSupportedDataCommands();
-
-    void sendDataCommand(Channel channel, SocketAddress remoteAddress, Command command);
-
-    Collection<String> getSupportedTextCommands();
-
-    void sendTextCommand(String destAddress, Command command) throws Exception;
+    @Override
+    protected void sendRequest(Channel channel, SocketAddress remoteAddress) {
+        channel.writeAndFlush("[TX,];;");
+    }
 
 }
